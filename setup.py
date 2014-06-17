@@ -13,7 +13,6 @@ setup(
     author_email='ebartels@gmail.com',
     url='',
     packages=['pycybersource'],
-    package_dir={'pycybersource': 'pycybersource'},
     platforms=['Platform Independent'],
     license='BSD',
     classifiers=[
