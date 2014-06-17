@@ -80,6 +80,10 @@ class CyberSourceResponse(object):
         return self.raw_response.decision
 
     @property
+    def success(self):
+        return self.reasonCode == 100
+
+    @property
     def requestID(self):
         return self.raw_response.requestID
 

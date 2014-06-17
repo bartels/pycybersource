@@ -53,6 +53,7 @@ class TestCyberSource(unittest.TestCase):
                    },
                    card=self.testCard,
                    billTo=self.billTo)
+        self.assertTrue(resp.success)
         self.assertEqual(resp.reasonCode, 100)
         self.assertEqual(resp.decision, 'ACCEPT')
         self.assertTrue(resp.ccAuthReply)
@@ -69,6 +70,7 @@ class TestCyberSource(unittest.TestCase):
                    },
                    card=self.testCard,
                    billTo=self.billTo)
+        self.assertTrue(resp.success)
         self.assertEqual(resp.reasonCode, 100)
         self.assertEqual(resp.decision, 'ACCEPT')
 
@@ -79,6 +81,7 @@ class TestCyberSource(unittest.TestCase):
                         'currency': 'USD',
                         'total': '33.33',
                     })
+        self.assertTrue(resp.success)
         self.assertEqual(resp.reasonCode, 100)
         self.assertEqual(resp.decision, 'ACCEPT')
 
@@ -92,6 +95,7 @@ class TestCyberSource(unittest.TestCase):
                    },
                    card=self.testCard,
                    billTo=self.billTo)
+        self.assertTrue(resp.success)
         self.assertEqual(resp.reasonCode, 100)
         self.assertEqual(resp.decision, 'ACCEPT')
         self.assertTrue(resp.ccAuthReply)
@@ -107,6 +111,7 @@ class TestCyberSource(unittest.TestCase):
                    },
                    card=self.testCard,
                    billTo=self.billTo)
+        self.assertFalse(resp.success)
         self.assertEqual(resp.reasonCode, 102)
         self.assertEqual(resp.decision, 'REJECT')
         self.assertTrue(resp.message)
@@ -123,6 +128,7 @@ class TestCyberSource(unittest.TestCase):
                    },
                    card=card,
                    billTo=self.billTo)
+        self.assertFalse(resp.success)
         self.assertEqual(resp.reasonCode, 231)
         self.assertEqual(resp.decision, 'REJECT')
         self.assertTrue(resp.message)
