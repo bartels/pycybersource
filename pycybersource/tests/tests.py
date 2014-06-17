@@ -3,10 +3,12 @@ import logging
 from random import randrange
 
 from pycybersource import CyberSource
+from pycybersource.base import CyberSourceError
 from pycybersource.config import get_config_from_file
 
 
-logging.basicConfig(level=logging.INFO)
+# Set to logging.DEBUG or logging.INFO for more diagnostic messages
+logging.basicConfig(level=logging.CRITICAL)
 # logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
 
 
@@ -132,6 +134,21 @@ class TestCyberSource(unittest.TestCase):
         self.assertEqual(resp.reasonCode, 231)
         self.assertEqual(resp.decision, 'REJECT')
         self.assertTrue(resp.message)
+
+    def test_bad_login_raises_error(self):
+        api = create_processor()
+        api.config.merchant_id = 'badid'
+        try:
+            resp = api.ccAuth(
+                    referenceCode=randrange(0, 100000),
+                    payment={
+                        'currency': 'USD',
+                        'total': '5',
+                    },
+                    card=self.testCard,
+                    billTo=self.billTo)
+        except CyberSourceError:
+            pass
 
 
 if __name__ == '__main__':

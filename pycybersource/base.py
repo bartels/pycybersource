@@ -2,9 +2,19 @@ import collections
 from decimal import Decimal as D
 from suds.client import Client
 from suds.wsse import Security, UsernameToken
+from suds import WebFault
 
 from pycybersource.config import CyberSourceConfig
 from pycybersource.response import CyberSourceResponse
+
+
+class CyberSourceError(Exception):
+    def __init__(self, original_exception=None):
+        self._original_exception = original_exception
+        super(CyberSourceError, self).__init__()
+
+    def __str__(self):
+        return str(self._original_exception)
 
 
 class CyberSource(object):
@@ -167,7 +177,10 @@ class CyberSource(object):
         service_options = self._build_service_data(serviceType, **kwargs)
         options.update(service_options)
 
-        response = self.client.service.runTransaction(**options)
+        try:
+            response = self.client.service.runTransaction(**options)
+        except WebFault as e:
+            raise CyberSourceError(e)
 
         return CyberSourceResponse(response)
 
