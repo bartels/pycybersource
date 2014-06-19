@@ -61,6 +61,11 @@ class TestCyberSource(unittest.TestCase):
         self.assertTrue(resp.ccAuthReply)
         self.assertTrue(resp.requestID)
 
+        # test types
+        self.assertIsInstance(resp.reasonCode, int)
+        self.assertIsInstance(resp.requestID, unicode)
+        self.assertIsInstance(resp.message, unicode)
+
     def test_cc_capture(self):
         api = create_processor()
         referenceCode = randrange(0, 100000),

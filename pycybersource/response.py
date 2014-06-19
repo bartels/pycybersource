@@ -77,7 +77,7 @@ class CyberSourceResponse(object):
 
     @property
     def decision(self):
-        return self.raw_response.decision
+        return unicode(self.raw_response.decision)
 
     @property
     def success(self):
@@ -85,11 +85,11 @@ class CyberSourceResponse(object):
 
     @property
     def requestID(self):
-        return self.raw_response.requestID
+        return unicode(self.raw_response.requestID)
 
     @property
     def message(self):
-        message = CC_RESPONSE_CODES.get(self.reasonCode, '')
+        message = unicode(CC_RESPONSE_CODES.get(self.reasonCode, ''))
         if self.reasonCode in (101, 102):
             if hasattr(self.raw_response, 'invalidField'):
                 fields = u'Invalid fields: {0}'.format(
