@@ -72,11 +72,16 @@ class CyberSource(object):
         # billing
         billTo = self._build_bill_to(**kwargs['billTo'])
 
+        # business rules
+        # businessRules = self.client.factory.create('ns0:businessRules')
+        # businessRules.ignoreAVSResult = 'true'
+
         return {
             'ccAuthService': ccAuthService,
             'purchaseTotals': payment,
             'card': card,
             'billTo': billTo,
+            # 'businessRules': businessRules,
         }
         return ccAuthService
 
@@ -95,7 +100,20 @@ class CyberSource(object):
             'purchaseTotals': payment,
         }
 
-    def _build_ccSale(self, **kwargs):
+    def _build_ccAuthReversalService(self, **kwargs):
+        ccAuthReversalService = self.client.factory.create(
+                                            'ns0:ccAuthReversalService')
+        ccAuthReversalService.authRequestID = kwargs['authRequestID']
+        ccAuthReversalService._run = 'true'
+
+        # payment info
+        payment = self._build_payment(**kwargs['payment'])
+        return {
+            'ccAuthReversalService': ccAuthReversalService,
+            'purchaseTotals': payment,
+        }
+
+    def _build_ccSaleService(self, **kwargs):
         # auth
         ccAuthServiceOptions = self._build_ccAuthService(**kwargs)
         ccCaptureService = self.client.factory.create(
@@ -216,4 +234,11 @@ class CyberSource(object):
             payment=payment,
             card=card,
             billTo=billTo))
-        return self.run_transaction('ccSale', **kwargs)
+        return self.run_transaction('ccSaleService', **kwargs)
+
+    def ccAuthReversal(self, referenceCode, authRequestID, payment, **kwargs):
+        kwargs.update(dict(
+            referenceCode=referenceCode,
+            authRequestID=authRequestID,
+            payment=payment))
+        return self.run_transaction('ccAuthReversalService', **kwargs)

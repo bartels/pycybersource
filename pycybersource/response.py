@@ -97,6 +97,10 @@ class CyberSourceResponse(object):
                 message = u'. '.join([message, fields])
         return message
 
+    @property
+    def is_soft_decline(self):
+        return self.message.lower().startswith('soft decline')
+
     def __str__(self):
         return '{0}\n{1}'.format(self.message, self.raw_response)
 

@@ -66,6 +66,59 @@ class TestCyberSource(unittest.TestCase):
         self.assertIsInstance(resp.requestID, unicode)
         self.assertIsInstance(resp.message, unicode)
 
+    def test_auth_and_reversal(self):
+        # Successful auth
+        api = create_processor()
+        auth_resp = api.ccAuth(
+                   referenceCode=randrange(0, 100000),
+                   payment={
+                       'currency': 'USD',
+                       'total': '99.99',
+                   },
+                   card=self.testCard,
+                   billTo=self.billTo)
+        self.assertTrue(auth_resp.success)
+        self.assertTrue(auth_resp.requestID)
+
+        # Do auth reversal
+        reverse_resp = api.ccAuthReversal(
+                   referenceCode=randrange(0, 100000),
+                   authRequestID=auth_resp.requestID,
+                   payment={
+                       'currency': 'USD',
+                       'total': '99.99',
+                   })
+        self.assertTrue(reverse_resp.success)
+        self.assertEqual(reverse_resp.reasonCode, 100)
+        self.assertEqual(reverse_resp.decision, 'ACCEPT')
+
+    def test_avs_fail_auth_and_reversal(self):
+        payment = {
+            'currency': 'USD',
+            'total': '2836.00',  # trigger avs failure
+        }
+
+        # Auth failed avs
+        api = create_processor()
+        auth_resp = api.ccAuth(
+                   referenceCode=randrange(0, 100000),
+                   payment=payment,
+                   card=self.testCard,
+                   billTo=self.billTo)
+        self.assertFalse(auth_resp.success)
+        self.assertTrue(auth_resp.requestID)
+        self.assertEqual(auth_resp.ccAuthReply.avsCode, 'N')
+        self.assertTrue(auth_resp.is_soft_decline)
+
+        # Still do reversal (issuing bank will still have the auth)
+        reverse_resp = api.ccAuthReversal(
+                   referenceCode=randrange(0, 100000),
+                   authRequestID=auth_resp.requestID,
+                   payment=payment)
+        self.assertTrue(reverse_resp.success)
+        self.assertEqual(reverse_resp.reasonCode, 100)
+        self.assertEqual(reverse_resp.decision, 'ACCEPT')
+
     def test_cc_capture(self):
         api = create_processor()
         referenceCode = randrange(0, 100000),
@@ -144,7 +197,7 @@ class TestCyberSource(unittest.TestCase):
         api = create_processor()
         api.config.merchant_id = 'badid'
         try:
-            resp = api.ccAuth(
+            api.ccAuth(
                     referenceCode=randrange(0, 100000),
                     payment={
                         'currency': 'USD',

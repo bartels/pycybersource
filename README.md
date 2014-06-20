@@ -3,25 +3,25 @@ pycybersource
 
 A light wrapper for Cybersource SOAP Toolkit API
 
-This software is still alpha stage.  It supports Cybersource card authorization, capture, and sales.
+This software is still alpha stage.  It supports card Auth, Capture, Sales, and Auth Reversal.
 
 Requirements
 ------------
 The only dependency is suds SOAP package, which can be found here:
 
     https://fedorahosted.org/suds/
-    
+ 
 Install suds:
 
     pip install suds
-    
-    
+ 
+ 
 Installation
 ------------
 
     pip install git+https://github.com/bartels/pycybersource.git
-    
-    
+
+
 Usage
 -----
     from pycybersource import CyberSource
@@ -48,15 +48,16 @@ Usage
               'postalCode': '90036',
               'street1': '555 Test St',
           })
-          
+       
 API Methods
 -----------
 
 This api wrapper currently only implements api calls for Authorization, Capture, and Sale (auth + capture).
 
 `CyberSource.ccAuth`: api call to perform a credit card authorization  
-`CyberSource.ccCapture`:  api call to perform a capture on a previous authorization
+`CyberSource.ccCapture`:  api call to perform a capture on a previous authorization  
 `Cybersource.ccSale`: api call to perform an auth & capture in one go  
+`CyberSource.ccAuthReversal`: api call to perform a credit card authorization reversal  
 
 View tests to see further usage
 
